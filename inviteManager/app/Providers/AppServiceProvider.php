@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Application\Listeners\SendEventCreatedNotification;
+use App\Domain\Event\Repositories\EventRepositoryInterface;
+use App\Domain\Events\EventCreated;
+use App\Infrastructure\Persistence\Eloquent\Repositories\EventRepository;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            EventRepositoryInterface::class,
+            EventRepository::class
+        );
     }
 
     /**
@@ -19,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(
+            EventCreated::class,
+            SendEventCreatedNotification::class,
+        );
     }
 }
